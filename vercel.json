@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "150mb",
+        "runtime": "python3.12",
+        "includeFiles": [
+          "nltk_data/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    { 
+      "src": "/static/(.*)", 
+      "dest": "/static/$1" 
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ]
+}
