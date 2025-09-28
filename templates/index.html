@@ -4,794 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Text Humanizer</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 35%, #16213e 100%);
-            min-height: 100vh;
-            color: #ffffff;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Animated background particles */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.1) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(120deg); }
-            66% { transform: translateY(15px) rotate(240deg); }
-        }
-
         .container {
             max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
         }
-
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 4s ease-in-out infinite;
-            text-shadow: 0 0 50px rgba(255, 107, 107, 0.3);
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .subtitle {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #b8c6db;
-            margin-bottom: 3rem;
-            opacity: 0.9;
-        }
-
-        form {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        form:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-5px);
-            box-shadow: 
-                0 20px 50px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: #e0e6ed;
-            font-size: 1.1rem;
-        }
-
-        /* Textarea container with icons */
-        .textarea-container {
-            position: relative;
-        }
-
         textarea {
-            width: 100%;
-            padding: 1.25rem 3.5rem 1.25rem 1.25rem;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-            font-size: 1rem;
-            line-height: 1.6;
+            min-height: 200px;
             resize: vertical;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
         }
-
-        textarea:focus {
-            outline: none;
-            border-color: #4ecdc4;
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 25px rgba(78, 205, 196, 0.3);
-            transform: scale(1.02);
-        }
-
-        textarea::placeholder {
-            color: #8892b0;
-        }
-
-        /* Textarea action icons */
-        .textarea-actions {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .textarea-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            color: #b8c6db;
-        }
-
-        .textarea-icon:hover {
-            background: rgba(78, 205, 196, 0.2);
-            border-color: rgba(78, 205, 196, 0.4);
-            color: #4ecdc4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
-        }
-
-        .textarea-icon:active {
-            transform: translateY(0);
-        }
-
-        .textarea-icon svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-
-        /* Tooltip for icons */
-        .textarea-icon::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .textarea-icon:hover::after {
-            opacity: 1;
-        }
-
-        /* Range slider styling */
-        .intensity-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        input[type="range"] {
-            flex: 1;
-            height: 8px;
-            border-radius: 5px;
-            background: linear-gradient(to right, #ff6b6b, #4ecdc4);
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            transition: opacity 0.3s ease;
-        }
-
-        input[type="range"]:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.6);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
-        }
-
-        #intensity-value {
-            display: inline-block;
-            min-width: 30px;
-            padding: 8px 15px;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
-            border-radius: 20px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1.1rem;
-            color: white;
-            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
-            transition: opacity 0.3s ease;
-        }
-
-        #intensity-value.disabled {
-            opacity: 0.3;
-        }
-
-        /* Deep Think Checkbox Styling */
-        .deep-think-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: rgba(255, 119, 198, 0.08);
-            border: 2px solid rgba(255, 119, 198, 0.2);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .deep-think-container:hover {
-            background: rgba(255, 119, 198, 0.12);
-            border-color: rgba(255, 119, 198, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 119, 198, 0.2);
-        }
-
-        .checkbox-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        input[type="checkbox"] {
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border: 2px solid rgba(255, 119, 198, 0.5);
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        input[type="checkbox"]:checked {
-            background: linear-gradient(135deg, #ff77c6, #4ecdc4);
-            border-color: #ff77c6;
-            box-shadow: 0 0 20px rgba(255, 119, 198, 0.4);
-        }
-
-        input[type="checkbox"]:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .deep-think-label {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #ff77c6;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .deep-think-label:hover {
-            color: #ff99d4;
-        }
-
-        .deep-think-description {
-            font-size: 0.9rem;
-            color: #b8c6db;
-            margin-top: 0.5rem;
-            opacity: 0.8;
-            line-height: 1.4;
-        }
-
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        button:hover::before {
-            left: 100%;
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
-        }
-
-        button:active {
-            transform: translateY(-1px);
-        }
-
-        button[type="submit"] {
-            width: 100%;
-            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
-            font-size: 1.2rem;
-            padding: 18px;
-            margin-top: 1rem;
-        }
-
-        button[type="submit"].deep-think-active {
-            background: linear-gradient(135deg, #ff77c6 0%, #667eea 100%);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .result {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            animation: slideInUp 0.6s ease-out;
-        }
-
-        .result.deep-think {
-            border: 2px solid rgba(255, 119, 198, 0.3);
-            background: rgba(255, 119, 198, 0.05);
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .result h2 {
-            color: #4ecdc4;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-
-        .result.deep-think h2 {
-            color: #ff77c6;
-        }
-
-        .processing-indicator {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-            color: #ff77c6;
-            font-size: 1.1rem;
-            background: rgba(255, 119, 198, 0.08);
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            animation: fadeInOut 2s ease-in-out infinite;
-        }
-
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        .text-output {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            line-height: 1.7;
-            font-size: 1.05rem;
-            color: #e0e6ed;
-            word-wrap: break-word;
-            backdrop-filter: blur(10px);
-        }
-
-        .actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .actions button {
-            flex: 1;
-            min-width: 200px;
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        }
-
-        /* Success message for actions */
-        .action-success {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(68, 160, 141, 0.3);
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .action-success.show {
-            transform: translateX(0);
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            form, .result {
-                padding: 1.5rem;
-            }
-
-            .actions {
-                flex-direction: column;
-            }
-
-            .actions button {
-                min-width: auto;
-            }
-
-            .intensity-container {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .deep-think-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            .textarea-actions {
-                position: static;
-                justify-content: flex-end;
-                margin-bottom: 10px;
-            }
-
-            textarea {
-                padding: 1.25rem;
-            }
-        }
-
-        /* Loading animation for form submission */
-        .loading {
-            position: relative;
-            pointer-events: none;
-        }
-
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            margin: -10px 0 0 -10px;
-            border: 2px solid transparent;
-            border-top: 2px solid #4ecdc4;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Success animation */
-        .success-message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(68, 160, 141, 0.3);
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-
-        .success-message.show {
-            transform: translateX(0);
+        .output {
+            background-color: #f7f9fb;
+            border-left: 4px solid #3b82f6; /* Blue border for emphasis */
+            min-height: 200px;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>AI Text Humanizer</h1>
-        <p class="subtitle">Make AI-generated text sound more human-like</p>
+<body class="bg-gray-50 font-sans p-4">
+    <div class="container mx-auto mt-8 p-6 bg-white shadow-xl rounded-xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Academic Text Humanizer</h1>
         
-        <form method="POST">
-            <div class="form-group">
-                <label for="ai_text">AI-Generated Text:</label>
-                <div class="textarea-container">
-                    <div class="textarea-actions">
-                        <div class="textarea-icon" data-tooltip="Paste from clipboard" onclick="pasteFromClipboard()">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 16H5V5h2v3h10V5h2v14z"/>
-                            </svg>
-                        </div>
-                        <div class="textarea-icon" data-tooltip="Clear text" onclick="clearText()">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <textarea id="ai_text" name="ai_text" rows="8" required placeholder="Paste your AI-generated text here to make it sound more natural and human-like...">{{ ai_text if ai_text else '' }}</textarea>
-                </div>
+        <!-- Error Message Display -->
+        {% if error_message %}
+            <div role="alert" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100 border border-red-300">
+                <p class="font-medium">Processing Error:</p>
+                <p>{{ error_message }}</p>
             </div>
-            
-            <div class="form-group">
-                <label for="intensity">Humanization Intensity (1-5):</label>
-                <div class="intensity-container">
-                    <input type="range" id="intensity" name="intensity" min="1" max="5" value="{{ intensity if intensity else 3 }}">
-                    <span id="intensity-value">{{ intensity if intensity else 3 }}</span>
+        {% endif %}
+
+        <form method="POST" action="/" class="space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Left Column: Input -->
+                <div>
+                    <label for="ai_text" class="block text-lg font-medium text-gray-700 mb-2">1. Paste AI-Generated Text Here:</label>
+                    <textarea 
+                        id="ai_text" 
+                        name="ai_text" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="e.g., The data clearly indicates that technological advancements necessitate a paradigm shift in human interaction."
+                    >{{ ai_text }}</textarea>
                 </div>
                 
-                <div class="deep-think-container">
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" id="deep_think" name="deep_think" {{ 'checked' if deep_think else '' }}>
-                    </div>
-                    <div>
-                        <label for="deep_think" class="deep-think-label">🧠 Deep Think Mode</label>
-                        <div class="deep-think-description">
-                            Ultra-advanced humanization: Processes text 5 times with maximum intensity for the most natural, human-like result
-                        </div>
+                <!-- Right Column: Output -->
+                <div>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">2. Humanized & Academic Output:</label>
+                    <div class="output p-4 rounded-lg text-gray-700 border border-gray-200">
+                        {% if humanized_text %}
+                            {{ humanized_text | safe }}
+                        {% else %}
+                            <p class="text-gray-500 italic">Your academic text transformation will appear here.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            
-            <button type="submit" id="submit-btn">Humanize Text</button>
-        </form>
-        
-        <div id="processing-indicator" class="processing-indicator">
-            🧠 Deep Think Mode Active - Processing text through 5 humanization cycles...
-        </div>
-        
-        {% if humanized_text %}
-        <div class="result {{ 'deep-think' if deep_think else '' }}">
-            <h2>{{ 'Deep Think ' if deep_think else '' }}Humanized Version:</h2>
-            <div class="text-output">{{ humanized_text|safe }}</div>
-            
-            <div class="actions">
-                <button onclick="copyToClipboard()">Copy to Clipboard</button>
-                <button onclick="downloadAsText()">Download as TXT</button>
-            </div>
-        </div>
-        {% endif %}
-    </div>
 
-    <script>
-        // DOM elements
-        const intensitySlider = document.getElementById('intensity');
-        const intensityValue = document.getElementById('intensity-value');
-        const deepThinkCheckbox = document.getElementById('deep_think');
-        const submitBtn = document.getElementById('submit-btn');
-        const processingIndicator = document.getElementById('processing-indicator');
-        const aiTextarea = document.getElementById('ai_text');
-        
-        // Update intensity value display
-        intensitySlider.addEventListener('input', function() {
-            intensityValue.textContent = this.value;
-        });
-        
-        // Handle deep think mode
-        function updateDeepThinkMode() {
-            const isDeepThink = deepThinkCheckbox.checked;
-            
-            if (isDeepThink) {
-                intensitySlider.value = 5;
-                intensityValue.textContent = '5';
-                intensitySlider.disabled = true;
-                intensityValue.classList.add('disabled');
-                submitBtn.classList.add('deep-think-active');
-                submitBtn.textContent = '🧠 Deep Think Humanize';
-            } else {
-                intensitySlider.disabled = false;
-                intensityValue.classList.remove('disabled');
-                submitBtn.classList.remove('deep-think-active');
-                submitBtn.textContent = 'Humanize Text';
+            <!-- Configuration and Submit -->
+            <div class="bg-gray-100 p-4 rounded-lg shadow-inner">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Settings</h3>
+
+                <div class="flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-8">
+                    <!-- Intensity Slider -->
+                    <div class="flex-1 min-w-[200px]">
+                        <label for="intensity" class="block text-sm font-medium text-gray-700">Transformation Intensity (1-5): <span id="intensity-val" class="font-bold text-blue-600">{{ intensity }}</span></label>
+                        <input type="range" id="intensity" name="intensity" min="1" max="5" value="{{ intensity }}" 
+                            class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('intensity-val').textContent = this.value;">
+                    </div>
+
+                    <!-- Deep Think Mode -->
+                    <div class="flex items-center space-x-4">
+                        <input type="checkbox" id="deep_think" name="deep_think" class="h-4 w-4 text-blue-600 border-gray-300 rounded" 
+                            {% if deep_think %}checked{% endif %} onchange="toggleCycles(this.checked)">
+                        <label for="deep_think" class="text-sm font-medium text-gray-700">Deep Think Mode (Max Intensity)</label>
+                    </div>
+
+                    <!-- Cycles Input (Visible only in Deep Think) -->
+                    <div id="cycles-group" class="flex-1 min-w-[150px] transition-all duration-300" style="{% if not deep_think %}display:none;{% endif %}">
+                        <label for="cycles" class="block text-sm font-medium text-gray-700">Deep Think Cycles (1-8):</label>
+                        <input type="number" id="cycles" name="cycles" min="1" max="8" value="{{ cycles }}"
+                               class="w-full p-2 border border-gray-300 rounded-lg text-center">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.02]">
+                    Humanize Text
+                </button>
+            </div>
+        </form>
+
+        <script>
+            function toggleCycles(isDeepThink) {
+                const cyclesGroup = document.getElementById('cycles-group');
+                cyclesGroup.style.display = isDeepThink ? 'block' : 'none';
+                
+                // If deep think is enabled, set intensity slider to max (5)
+                const intensitySlider = document.getElementById('intensity');
+                if (isDeepThink) {
+                    intensitySlider.value = 5;
+                    document.getElementById('intensity-val').textContent = 5;
+                }
             }
-        }
-        
-        deepThinkCheckbox.addEventListener('change', updateDeepThinkMode);
-        
-        // Initialize deep think mode on page load
-        updateDeepThinkMode();
-        
-        // Textarea action functions
-        async function pasteFromClipboard() {
-            try {
-                const text = await navigator.clipboard.readText();
-                aiTextarea.value = text;
-                aiTextarea.focus();
-                showActionSuccess('Text pasted from clipboard!');
-            } catch (err) {
-                console.error('Failed to read clipboard: ', err);
-                showActionSuccess('Failed to paste. Please paste manually.', true);
-            }
-        }
-        
-        function clearText() {
-            aiTextarea.value = '';
-            aiTextarea.focus();
-            showActionSuccess('Text cleared!');
-        }
-        
-        // Add form submission loading state
-        document.querySelector('form').addEventListener('submit', function() {
-            const isDeepThink = deepThinkCheckbox.checked;
-            
-            submitBtn.classList.add('loading');
-            submitBtn.textContent = '';
-            
-            if (isDeepThink) {
-                processingIndicator.style.display = 'block';
-                processingIndicator.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
-        
-        function copyToClipboard() {
-            const text = document.querySelector('.text-output').innerText;
-            navigator.clipboard.writeText(text)
-                .then(() => showSuccessMessage('Text copied to clipboard!'))
-                .catch(err => console.error('Failed to copy: ', err));
-        }
-        
-        function downloadAsText() {
-            const text = document.querySelector('.text-output').innerText;
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'humanized-text.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showSuccessMessage('File downloaded successfully!');
-        }
-        
-        function showSuccessMessage(message) {
-            const successDiv = document.createElement('div');
-            successDiv.className = 'success-message';
-            successDiv.textContent = message;
-            document.body.appendChild(successDiv);
-            
-            setTimeout(() => successDiv.classList.add('show'), 100);
-            setTimeout(() => {
-                successDiv.classList.remove('show');
-                setTimeout(() => document.body.removeChild(successDiv), 300);
-            }, 3000);
-        }
-        
-        function showActionSuccess(message, isError = false) {
-            const successDiv = document.createElement('div');
-            successDiv.className = 'action-success';
-            if (isError) {
-                successDiv.style.background = 'linear-gradient(135deg, #ff6b6b, #ff5252)';
-            }
-            successDiv.textContent = message;
-            document.body.appendChild(successDiv);
-            
-            setTimeout(() => successDiv.classList.add('show'), 100);
-            setTimeout(() => {
-                successDiv.classList.remove('show');
-                setTimeout(() => document.body.removeChild(successDiv), 300);
-            }, 2500);
-        }
-        
-        // Add smooth scrolling to result
-        if (document.querySelector('.result')) {
-            document.querySelector('.result').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        }
-    </script>
+        </script>
+    </div>
 </body>
 </html>

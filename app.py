@@ -7,6 +7,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from typing import List
 import os # Import os for path manipulation
 import sys # Import sys for controlled exit on failure
+import traceback # <-- NEW: Import traceback for detailed logging
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -35,19 +36,14 @@ try:
 except LookupError as e:
     # This is the most likely failure mode on Vercel: data is missing or path is wrong.
     print(f"FATAL ERROR: NLTK data missing: {e}. Please ensure the 'nltk_data' folder is bundled and contains all required files (punkt, averaged_perceptron_tagger, wordnet).")
-    # For a critical dependency like this, it's better to crash explicitly for debugging
-    # than to have a silent Internal Server Error on every request.
-    sys.exit(1) # Crash the application startup
+    sys.exit(1)
 except Exception as e:
     # General catch for other initialization issues
     print(f"NLTK configuration failed for an unknown reason: {e}.")
-    sys.exit(1) # Crash the application startup
+    sys.exit(1)
 
 
 class TextHumanizer:
-# ... (The rest of your TextHumanizer class methods are already fine) ...
-# I am including the full class below for completeness but it is unchanged.
-
     def __init__(self):
         # List of functions used for sentence-level variation
         self.sentence_variations = [
@@ -202,7 +198,7 @@ class TextHumanizer:
                     sentences[idx] = phrase + ' ' + sent_start[0].lower() + sent_start[1:]
                 else:
                     sentences[idx] = phrase + ' ' + sent_start
-            
+                
         return ' '.join(sentences)
     
     def add_scholarly_elements(self, text: str) -> str:
@@ -343,6 +339,7 @@ class TextHumanizer:
         try:
             pos_tags = nltk.pos_tag(words)
         except:
+            # This handles unexpected NLTK errors during POS tagging gracefully
             return text
         
         new_words = []
@@ -450,33 +447,48 @@ def index():
         'humanized_text': '',
         'intensity': 3,
         'deep_think': False,
-        'cycles': 5 # Default cycles for Deep Think
+        'cycles': 5, # Default cycles for Deep Think
+        'error_message': None # <-- NEW: For displaying runtime errors
     }
 
     if request.method == 'POST':
         ai_text = request.form.get('ai_text', '')
-        intensity = int(request.form.get('intensity', 3))
-        deep_think = request.form.get('deep_think') == 'on'
-        cycles = int(request.form.get('cycles', 5))
         
-        humanizer = TextHumanizer()
-        
-        if deep_think:
-            # Deep Think Mode: Applies max intensity over multiple cycles
-            humanized_text = humanizer.deep_think_humanize(ai_text, cycles=cycles)
-            context['intensity'] = 5 
-            context['deep_think'] = True
-            context['cycles'] = cycles
-        else:
-            # Normal mode: Single humanization pass
-            humanized_text = humanizer.humanize(ai_text, intensity)
-            context['intensity'] = intensity
-            context['deep_think'] = False
-            context['cycles'] = 5
+        # CRITICAL FIX: Wrap the entire processing logic in a try/except block
+        try:
+            intensity = int(request.form.get('intensity', 3))
+            deep_think = request.form.get('deep_think') == 'on'
+            cycles = int(request.form.get('cycles', 5))
+            
+            humanizer = TextHumanizer()
+            
+            if deep_think:
+                # Deep Think Mode: Applies max intensity over multiple cycles
+                humanized_text = humanizer.deep_think_humanize(ai_text, cycles=cycles)
+                context['intensity'] = 5 
+                context['deep_think'] = True
+                context['cycles'] = cycles
+            else:
+                # Normal mode: Single humanization pass
+                humanized_text = humanizer.humanize(ai_text, intensity)
+                context['intensity'] = intensity
+                context['deep_think'] = False
+                context['cycles'] = 5
 
-        context['ai_text'] = ai_text
-        # Convert newlines to HTML line breaks for proper display
-        context['humanized_text'] = humanized_text.replace('\n\n', '<br><br>')
+            context['ai_text'] = ai_text
+            # Convert newlines to HTML line breaks for proper display
+            context['humanized_text'] = humanized_text.replace('\n\n', '<br><br>')
+        
+        except Exception as e:
+            # If the processing fails, log the full traceback and notify the user
+            error_details = traceback.format_exc()
+            print(f"ERROR: Runtime crash during POST request:\n{error_details}")
+            
+            context['ai_text'] = ai_text # Keep the original text
+            context['humanized_text'] = '' # Clear the failed output
+            context['error_message'] = "An internal server error occurred while processing your text. Please check the Vercel logs for the full Python traceback (starting with 'ERROR: Runtime crash...')."
+            
+            # Return with a 500 status code
+            return render_template('index.html', **context), 500
     
     return render_template('index.html', **context)
-# The local development server setup is removed for Vercel compatibility.
