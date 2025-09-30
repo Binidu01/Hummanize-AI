@@ -45,10 +45,10 @@ Humanizer AI enhances machine-generated text to sound more natural and human-lik
 ### Quick Start
 ```bash
 # Clone the repository
-git clone undefined.git
+git clone https://github.com/Binidu01/Hummanize-AI.git
 
 # Navigate to project directory
-cd undefined
+cd Hummanize-AI
 
 # Create virtual environment
 python -m venv venv
