@@ -3,13 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Text Humanizer</title>
-    <link rel="icon" type="image/x-icon" href="../static/favicon.ico" />
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5932657333226516"
-      crossorigin="anonymous"
-    ></script>
+    
+    <!-- Primary Meta Tags -->
+    <title>AI Text Humanizer - Make AI Text Sound Natural</title>
+    <meta name="title" content="AI Text Humanizer - Make AI Text Sound Natural" />
+    <meta name="description" content="Transform AI-generated text into natural, human-like writing. Advanced humanization with Deep Think Mode for the most authentic results." />
+    <meta name="keywords" content="AI text humanizer, AI to human text, humanize AI content, natural writing, text converter" />
+    <meta name="author" content="AI Text Humanizer" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />
+    <link rel="apple-touch-icon" href="/static/favicon.ico" />
+    
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://humanize-ai-amber.vercel.app/" />
+    <meta property="og:title" content="AI Text Humanizer - Make AI Text Sound Natural" />
+    <meta property="og:description" content="Transform AI-generated text into natural, human-like writing. Advanced humanization with Deep Think Mode for the most authentic results." />
+    <meta property="og:image" content="https://humanize-ai-amber.vercel.app/static/favicon.ico" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="AI Text Humanizer" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://humanize-ai-amber.vercel.app/" />
+    <meta name="twitter:title" content="AI Text Humanizer - Make AI Text Sound Natural" />
+    <meta name="twitter:description" content="Transform AI-generated text into natural, human-like writing. Advanced humanization with Deep Think Mode for the most authentic results." />
+    <meta name="twitter:image" content="https://humanize-ai-amber.vercel.app/static/favicon.ico" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
+    
     <style>
       * {
         margin: 0;
@@ -87,9 +115,9 @@
         margin-bottom: 0.5rem;
         background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
         background-size: 300% 300%;
-        -webkit-background-clip: text; /* For Safari/Chrome */
-        background-clip: text; /* Standard property */
-        -webkit-text-fill-color: transparent; /* For Safari/Chrome */
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
         animation: gradientShift 4s ease-in-out infinite;
         text-shadow: 0 0 50px rgba(255, 107, 107, 0.3);
       }
@@ -143,7 +171,6 @@
         font-size: 1.1rem;
       }
 
-      /* Textarea container with icons */
       .textarea-container {
         position: relative;
       }
@@ -174,7 +201,6 @@
         color: #8892b0;
       }
 
-      /* Textarea action icons */
       .textarea-actions {
         position: absolute;
         top: 12px;
@@ -217,7 +243,6 @@
         fill: currentColor;
       }
 
-      /* Tooltip for icons */
       .textarea-icon::after {
         content: attr(data-tooltip);
         position: absolute;
@@ -239,7 +264,6 @@
         opacity: 1;
       }
 
-      /* Range slider styling */
       .intensity-container {
         display: flex;
         align-items: center;
@@ -307,7 +331,6 @@
         opacity: 0.3;
       }
 
-      /* Deep Think Checkbox Styling */
       .deep-think-container {
         display: flex;
         align-items: center;
@@ -534,7 +557,6 @@
         background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
       }
 
-      /* Success message for actions */
       .action-success {
         position: fixed;
         top: 20px;
@@ -555,7 +577,6 @@
         transform: translateX(0);
       }
 
-      /* Responsive design */
       @media (max-width: 768px) {
         .container {
           padding: 1rem;
@@ -601,7 +622,6 @@
         }
       }
 
-      /* Loading animation for form submission */
       .loading {
         position: relative;
         pointer-events: none;
@@ -630,7 +650,6 @@
         }
       }
 
-      /* Success animation */
       .success-message {
         position: fixed;
         top: 20px;
@@ -689,9 +708,7 @@
               rows="8"
               required
               placeholder="Paste your AI-generated text here to make it sound more natural and human-like..."
-            >
-{{ ai_text if ai_text else '' }}</textarea
-            >
+            >{{ ai_text if ai_text else '' }}</textarea>
           </div>
         </div>
 
@@ -706,20 +723,15 @@
               max="5"
               value="{{ intensity if intensity else 3 }}"
             />
-            <span id="intensity-value"
-              >{{ intensity if intensity else 3 }}</span
-            >
+            <span id="intensity-value">{{ intensity if intensity else 3 }}</span>
           </div>
 
           <div class="deep-think-container">
             <div class="checkbox-wrapper">
-              <input type="checkbox" id="deep_think" name="deep_think" {{
-              'checked' if deep_think else '' }}>
+              <input type="checkbox" id="deep_think" name="deep_think" {{ 'checked' if deep_think else '' }}>
             </div>
             <div>
-              <label for="deep_think" class="deep-think-label"
-                >🧠 Deep Think Mode</label
-              >
+              <label for="deep_think" class="deep-think-label">🧠 Deep Think Mode</label>
               <div class="deep-think-description">
                 Ultra-advanced humanization: Processes text 5 times with maximum
                 intensity for the most natural, human-like result
@@ -732,8 +744,7 @@
       </form>
 
       <div id="processing-indicator" class="processing-indicator">
-        🧠 Deep Think Mode Active - Processing text through 5 humanization
-        cycles...
+        🧠 Deep Think Mode Active - Processing text through 5 humanization cycles...
       </div>
 
       {% if humanized_text %}
@@ -750,22 +761,17 @@
     </div>
 
     <script>
-      // DOM elements
       const intensitySlider = document.getElementById("intensity");
       const intensityValue = document.getElementById("intensity-value");
       const deepThinkCheckbox = document.getElementById("deep_think");
       const submitBtn = document.getElementById("submit-btn");
-      const processingIndicator = document.getElementById(
-        "processing-indicator"
-      );
+      const processingIndicator = document.getElementById("processing-indicator");
       const aiTextarea = document.getElementById("ai_text");
 
-      // Update intensity value display
       intensitySlider.addEventListener("input", function () {
         intensityValue.textContent = this.value;
       });
 
-      // Handle deep think mode
       function updateDeepThinkMode() {
         const isDeepThink = deepThinkCheckbox.checked;
 
@@ -785,11 +791,8 @@
       }
 
       deepThinkCheckbox.addEventListener("change", updateDeepThinkMode);
-
-      // Initialize deep think mode on page load
       updateDeepThinkMode();
 
-      // Textarea action functions
       async function pasteFromClipboard() {
         try {
           const text = await navigator.clipboard.readText();
@@ -808,10 +811,8 @@
         showActionSuccess("Text cleared!");
       }
 
-      // Add form submission loading state
       document.querySelector("form").addEventListener("submit", function () {
         const isDeepThink = deepThinkCheckbox.checked;
-
         submitBtn.classList.add("loading");
         submitBtn.textContent = "";
 
@@ -863,8 +864,7 @@
         const successDiv = document.createElement("div");
         successDiv.className = "action-success";
         if (isError) {
-          successDiv.style.background =
-            "linear-gradient(135deg, #ff6b6b, #ff5252)";
+          successDiv.style.background = "linear-gradient(135deg, #ff6b6b, #ff5252)";
         }
         successDiv.textContent = message;
         document.body.appendChild(successDiv);
@@ -876,7 +876,6 @@
         }, 2500);
       }
 
-      // Add smooth scrolling to result
       if (document.querySelector(".result")) {
         document.querySelector(".result").scrollIntoView({
           behavior: "smooth",
