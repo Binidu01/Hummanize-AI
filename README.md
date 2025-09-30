@@ -4,7 +4,7 @@
 
 Humanizer AI enhances machine-generated text to sound more natural and human-like. It improves tone, clarity, and flow by adding contextual awareness, emotional nuance, and conversational style—making written content more relatable
 
-![Python](https://img.shields.io/badge/Python-3572A5?style=for-the-badge&logo=python&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-e34c26?style=for-the-badge&logo=html&logoColor=white) ![Python](https://img.shields.io/badge/Python-3572A5?style=for-the-badge&logo=python&logoColor=white) ![TeX](https://img.shields.io/badge/TeX-6b7280?style=for-the-badge&logo=tex&logoColor=white)
 
 [![Stars](https://img.shields.io/github/stars/Binidu01/Hummanize-AI?style=for-the-badge&logo=github)](https://github.com/Binidu01/Hummanize-AI/stargazers)
 [![Forks](https://img.shields.io/github/forks/Binidu01/Hummanize-AI?style=for-the-badge&logo=github)](https://github.com/Binidu01/Hummanize-AI/network/members)
@@ -70,11 +70,13 @@ python main.py
 hummanize-ai --help
 ```
 
-For more detailed usage instructions, please refer to our [documentation](https://github.com/Binidu01/Hummanize-AI).
+For more detailed usage instructions, please refer to our [documentation](https://humanize-ai-amber.vercel.app).
 
 ## 🏗️ Built With
 
-- **Python** - 100.0%
+- **HTML** - 61.0%
+- **Python** - 38.5%
+- **TeX** - 0.5%
 
 ## 🤝 Contributing
 
@@ -96,7 +98,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Project Link: [https://github.com/Binidu01/Hummanize-AI](https://github.com/Binidu01/Hummanize-AI)
 
-
+🌐 Website: [https://humanize-ai-amber.vercel.app](https://humanize-ai-amber.vercel.app)
 
 ## 🙏 Acknowledgments
 
@@ -115,4 +117,3 @@ Made with ❤️ by [Binidu01](https://github.com/Binidu01)
 ⭐ Star this repo if you find it useful!
 
 </div>
-
