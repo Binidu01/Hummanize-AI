@@ -1,3 +1,2 @@
-Flask
-mangum
-nltk
+Flask==3.0.0
+nltk==3.8.1
